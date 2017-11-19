@@ -1,0 +1,37 @@
+---
+title: "Explor New Taipei City Bus Stops"
+date: "19 November 2017"
+output: ioslides_presentation
+---
+
+## Before we create a map...
+```{r echo = TRUE, warning = FALSE}
+#Load necessary packages
+library(leaflet)
+library(dplyr)
+
+#Set system locale to correctly encode chinese character
+Sys.setlocale("LC_ALL", 'en_US.UTF-8')  
+```
+
+## Let's see how many bus stops in New Taipei City, Taiwan
+```{r, echo = FALSE}
+
+
+
+
+#Read data from New Taipei Bus Stop Government Open Data
+new_taipei_bus_stop_csv <- "http://data.ntpc.gov.tw/od/data/api/62519D6B-9B6D-43E1-BFD7-D66007005E6F?$format=csv"
+data <- read.csv(new_taipei_bus_stop_csv)
+longlat_data <- select(data, c(2,4,8:9)) %>%
+                    filter(!is.na(nameEn))
+
+#Use leaftlet package to mark all the bus station on map
+longlat_data[] %>%  
+  leaflet() %>%
+  addTiles() %>%
+  addCircleMarkers(~longitude, ~latitude, popup = longlat_data$NameEn,
+                   label = longlat_data$NameEn,
+                   clusterOptions = markerClusterOptions(),
+                   weight = 1)
+```
